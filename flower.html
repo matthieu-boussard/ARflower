@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!-- three.js library -->
+<script src='./third_party/three.js/build/three.js'></script>
+<script src="./third_party/three.js/examples/js/libs/stats.min.js"></script>
+<script src="./third_party/three.js/examples/js/loaders/OBJLoader.js"></script>
+
+<!-- jsartookit -->
+<script src="./third_party/jsartoolkit5/build/artoolkit.min.js"></script>
+<script src="./third_party/jsartoolkit5/js/artoolkit.api.js"></script>
+
+<!-- include threex.artoolkit -->
+<script src="./third_party/threex-artoolkitsource.js"></script>
+<script src="./third_party/threex-artoolkitcontext.js"></script>
+<script src="./third_party/threex-armarkercontrols.js"></script>
+
+<body style='margin : 0px; overflow: hidden;'>
+<script>
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Init
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// init renderer
+	var renderer	= new THREE.WebGLRenderer({
+		// antialias	: true,
+		alpha: true
+	});
+	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+	// renderer.setPixelRatio( 1/2 );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.domElement.style.position = 'absolute'
+	renderer.domElement.style.top = '0px'
+	renderer.domElement.style.left = '0px'
+	document.body.appendChild( renderer.domElement );
+
+	// array of functions for the rendering loop
+	var onRenderFcts= [];
+
+	// init scene and camera
+	var scene	= new THREE.Scene();
+
+	var ambient = new THREE.AmbientLight( 0x666666 );
+	scene.add( ambient );
+
+	var directionalLight = new THREE.DirectionalLight( 0x887766 );
+	directionalLight.position.set( -1, -10, -10 ).normalize();
+	scene.add( directionalLight );
+	
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Initialize a basic camera
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// Create a camera
+	var camera = new THREE.Camera();
+	scene.add(camera);
+
+	////////////////////////////////////////////////////////////////////////////////
+	//          handle arToolkitSource
+	////////////////////////////////////////////////////////////////////////////////
+
+	var arToolkitSource = new THREEx.ArToolkitSource({
+		// to read from the webcam 
+		// sourceType : 'webcam',
+		
+		// to read from an image
+		// sourceType : 'image',
+		// sourceUrl : '../../data/images/img.jpg',		
+
+		// to read from a video
+		// sourceType : 'video',
+		// sourceUrl : '../../data/videos/headtracking.mp4',		
+
+		sourceWidth: 80*3,
+		sourceHeight: 60*3,
+	})
+
+	arToolkitSource.init(function onReady(){
+		// handle resize of renderer
+		arToolkitSource.onResize(renderer.domElement)		
+	})
+	
+	// handle resize
+	window.addEventListener('resize', function(){
+		// handle arToolkitSource resize
+		arToolkitSource.onResize(renderer.domElement)		
+	})	
+	////////////////////////////////////////////////////////////////////////////////
+	//          initialize arToolkitContext
+	////////////////////////////////////////////////////////////////////////////////
+	
+
+	// create atToolkitContext
+	var arToolkitContext = new THREEx.ArToolkitContext({
+		cameraParametersUrl: '../../data/data/camera_para.dat',
+		detectionMode: 'mono',
+		imageSmoothingEnabled: false,
+		maxDetectionRate: 30,
+		sourceWidth: arToolkitSource.parameters.sourceWidth,
+		sourceHeight: arToolkitSource.parameters.sourceHeight,
+	})
+	// initialize it
+	arToolkitContext.init(function onCompleted(){
+		// copy projection matrix to camera
+		var projectionMatrix = arToolkitContext.arController.getCameraMatrix();
+		camera.projectionMatrix.fromArray(projectionMatrix);
+	})
+
+	// update artoolkit on every frame
+	onRenderFcts.push(function(){
+		if( arToolkitSource.ready === false )	return
+
+		arToolkitContext.update( arToolkitSource.domElement )
+	})
+	
+	
+	////////////////////////////////////////////////////////////////////////////////
+	//          Create a ArMarkerControls
+	////////////////////////////////////////////////////////////////////////////////
+	
+	var markerRoot = new THREE.Group
+	scene.add(markerRoot)
+	var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+		type : 'pattern',
+		// patternUrl : '../../data/data/patt.hiro'
+		patternUrl : './data/data/patt.kanji'
+	})
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		add an object in the scene
+	//////////////////////////////////////////////////////////////////////////////////
+
+	var loader = new THREE.OBJLoader();
+	
+	loader.load(
+		// resource URL
+		'./data/obj/flower.obj',
+		// Function when resource is loaded
+		function ( object ) {
+
+			console.log('---------->' ,object);
+
+			for(var i = object.children.length-1;i>=9;i--){
+				var material	= new THREE.MeshPhongMaterial({
+					color:0xFFBAD2	
+				}); 
+		     	object.children[i].material = material;
+			}
+			for(var i = 8;i>=0;i--){
+				var material_2	= new THREE.MeshPhongMaterial({
+					color:0xFF1010	
+				}); 
+		     	object.children[i].material = material_2;
+			}
+			object.scale.x = 0.5;
+			object.scale.y = 0.5;
+			object.scale.z = 0.5;
+			object.rotation.x = 1.57;
+			// object.translateY(1.28);
+
+			markerRoot.add( object);
+			object.translateZ(-0.20);
+		},
+		function ( object ) {
+			console.log('progree:', object);
+		},
+		function ( error ) {
+			console.log('error:', error);
+		}
+	);
+	//////////////////////////////////////////////////////////////////////////////////
+	//		render the whole thing on the page
+	//////////////////////////////////////////////////////////////////////////////////
+	var stats = new Stats();
+	document.body.appendChild( stats.dom );
+	// render the scene
+	onRenderFcts.push(function(){
+		renderer.render( scene, camera );
+		stats.update();
+	})
+
+	// run the rendering loop
+	var lastTimeMsec= null
+	requestAnimationFrame(function animate(nowMsec){
+		// keep looping
+		requestAnimationFrame( animate );
+		// measure time
+		lastTimeMsec	= lastTimeMsec || nowMsec-1000/60
+		var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec)
+		lastTimeMsec	= nowMsec
+		// call each update function
+		onRenderFcts.forEach(function(onRenderFct){
+			onRenderFct(deltaMsec/1000, nowMsec/1000)
+		})
+	})
+</script></body>
