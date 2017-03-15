@@ -60,7 +60,7 @@
 
 	var arToolkitSource = new THREEx.ArToolkitSource({
 		// to read from the webcam 
-		// sourceType : 'webcam',
+		sourceType : 'webcam',
 		
 		// to read from an image
 		// sourceType : 'image',
@@ -70,8 +70,8 @@
 		// sourceType : 'video',
 		// sourceUrl : '../../data/videos/headtracking.mp4',		
 
-		sourceWidth: 80*3,
-		sourceHeight: 60*3,
+		sourceWidth: 480,
+		sourceHeight: 360
 	})
 
 	arToolkitSource.init(function onReady(){
