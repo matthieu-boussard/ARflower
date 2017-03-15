@@ -7,11 +7,12 @@ app.use('/data', express.static(__dirname + '/data'));
 
 app.get('/', function (req, res) {
    res.sendFile(path.join(__dirname, 'flower.html'));
-})
+});
+
+app.get('/health_check', function (req, res) {
+   res.send('alive');
+});
 
 var server = app.listen(8080, function () {
-   var host = server.address().address
-   var port = server.address().port
-   
-   console.log("Example app listening at http://%s:%s", host, port)
-})
+   console.log("Flower is listening at http://%s:%s", host, port)
+});
