@@ -35,7 +35,7 @@ app.get('/health_check', function (req, res) {
    res.send('alive');
 });
 
-app.get('/sms_webhook', function (req, res) {
+app.post('/sms_webhook', function (req, res) {
    console.log('sms recieved', req)
    res.sendFile(path.join(__dirname, 'flower.html'));
 });
