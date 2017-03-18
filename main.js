@@ -17,7 +17,7 @@ var callr_text= 'Hi there'
 var server = app.listen(8080, function () {
    var host = server.address().address;
    var port = server.address().port;
-   fs.readFile( __dirname + '/flower.html', function (err, data) {
+   fs.readFile( __dirname + '/sms.html', function (err, data) {
    	tempFn = doT.template(data);
    });
    console.log("Flower is listening at http://%s:%s", host, port)
@@ -44,6 +44,10 @@ app.use('/data', express.static(__dirname + '/data'));
 
 app.get('/', function (req, res) {
    res.send(tempFn({sms_text: callr_text}));
+});
+
+app.get('/flower', function (req, res) {
+	res.sendFile(path.join(__dirname, 'flower.html'));
 });
 
 app.get('/health_check', function (req, res) {

@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <!-- three.js library -->
-<script src='./third_party/three.js/build/three.js'></script>
-<script src="./third_party/three.js/examples/js/libs/stats.min.js"></script>
-<script src="./third_party/three.js/examples/js/loaders/OBJLoader.js"></script>
+<script src='../../three.js-master/build/three.js'></script>
+<script src="../../three.js-master/examples/js/libs/stats.min.js"></script>
+<script src="../../three.js-master/examples/js/loaders/OBJLoader.js"></script>
+<script src="../../three.js-master/examples/js/loaders/TTFLoader.js"></script>
+<script src="../../three.js-master/examples/js/libs/opentype.min.js"></script>
+<script src="../../three.js-master/examples/js/utils/GeometryUtils.js"></script>
+
 
 <!-- jsartookit -->
-<script src="./third_party/jsartoolkit5/build/artoolkit.min.js"></script>
-<script src="./third_party/jsartoolkit5/js/artoolkit.api.js"></script>
-
+<script src="../vendor/jsartoolkit5/build/artoolkit.min.js"></script>
+<script src="../vendor/jsartoolkit5/js/artoolkit.api.js"></script>
 <!-- include threex.artoolkit -->
-<script src="./third_party/threex-artoolkitsource.js"></script>
-<script src="./third_party/threex-artoolkitcontext.js"></script>
-<script src="./third_party/threex-armarkercontrols.js"></script>
+<script src="../threex-artoolkitsource.js"></script>
+<script src="../threex-artoolkitcontext.js"></script>
+<script src="../threex-armarkercontrols.js"></script>
 
 <body style='margin : 0px; overflow: hidden;'>
-
 <script>
 	//////////////////////////////////////////////////////////////////////////////////
 	//		Init
@@ -130,44 +132,30 @@
 	//		add an object in the scene
 	//////////////////////////////////////////////////////////////////////////////////
 
-	var loader = new THREE.OBJLoader();
-	
-	loader.load(
-		// resource URL
-		'./data/obj/flower.obj',
-		// Function when resource is loaded
-		function ( object ) {
+	group = new THREE.Group();	
+	scene.add( group );
+	var loader = new THREE.TTFLoader();
 
-			console.log('---------->' ,object);
+	material = new THREE.MeshPhongMaterial( { color: 0xFFBAD2, shading: THREE.FlatShading } );
+	loader.load( './data/kenpixel.ttf', function ( json ) {
+		var font = new THREE.Font(json);
 
-			for(var i = object.children.length-1;i>=9;i--){
-				var material	= new THREE.MeshPhongMaterial({
-					color:0xFFBAD2	
-				}); 
-		     	object.children[i].material = material;
-			}
-			for(var i = 8;i>=0;i--){
-				var material_2	= new THREE.MeshPhongMaterial({
-					color:0xFF1010	
-				}); 
-		     	object.children[i].material = material_2;
-			}
-			object.scale.x = 0.5;
-			object.scale.y = 0.5;
-			object.scale.z = 0.5;
-			object.rotation.x = 1.57;
-			// object.translateY(1.28);
+		var textGeo = new THREE.TextGeometry( {{=it.sms_text}}, {
+					font:font,
+					size: 0.3,
+					height: 0.05
+		});
 
-			markerRoot.add( object);
-			object.translateZ(-0.20);
-		},
-		function ( object ) {
-			console.log('progree:', object);
-		},
-		function ( error ) {
-			console.log('error:', error);
-		}
-	);
+		textGeo.computeBoundingBox();
+		var centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+		
+		// textGeo.computeVertexNormals();
+		var textMesh1 = new THREE.Mesh( textGeo, material );
+		textMesh1.position.x = centerOffset;
+
+		markerRoot.add( textMesh1 );
+	});
+
 	//////////////////////////////////////////////////////////////////////////////////
 	//		render the whole thing on the page
 	//////////////////////////////////////////////////////////////////////////////////
