@@ -23,6 +23,12 @@ api.call('webhooks.subscribe', type, endpoint, options).success(function(respons
     // success callback
 });
 
+var optionSMS = {
+    webhook: {
+        endpoint: endpoint
+    }
+};
+
 
 app.use('/third_party', express.static(__dirname + '/third_party'));
 app.use('/data', express.static(__dirname + '/data'));
@@ -35,8 +41,14 @@ app.get('/health_check', function (req, res) {
    res.send('alive');
 });
 
+app.post('/send_sms', function (req, res) {
+	api.call('sms.send', '', '+33768399556', 'Welcome to AR flower', optionSMS).success(function(response) {
+		res.send('sent')
+	});
+});
+
 app.post('/sms_webhook', function (req, res) {
-   console.log('sms recieved', req)
+   console.log('sms recieved', req.body.data);
    res.sendFile(path.join(__dirname, 'flower.html'));
 });
 
