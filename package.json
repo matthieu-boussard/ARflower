@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/matthieu-boussard/ARflower#readme",
   "dependencies": {
+    "body-parser": "^1.17.1",
     "callr": "^1.0.0",
     "dotenv": "^4.0.0",
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "lodash": "^4.17.4"
   }
 }

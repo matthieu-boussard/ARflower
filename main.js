@@ -1,15 +1,25 @@
+var bodyParser = require('body-parser');
 var callr = require('callr');
 var express = require('express');
 var path = require('path');
 var dotenv = require('dotenv');
+var doT = require('dot');
+var fs = require('fs');
+var _ = require('lodash');
 
 dotenv.load({ silent: true });
 var app = express();
+app.use(bodyParser.json())
+
+var tempFn = ''
+var callr_text= 'Hi there'
 
 var server = app.listen(8080, function () {
-   var host = server.address().address
-   var port = server.address().port
-
+   var host = server.address().address;
+   var port = server.address().port;
+   fs.readFile( __dirname + '/flower.html', function (err, data) {
+   	tempFn = doT.template(data);
+   });
    console.log("Flower is listening at http://%s:%s", host, port)
 });
 
@@ -29,12 +39,11 @@ var optionSMS = {
     }
 };
 
-
 app.use('/third_party', express.static(__dirname + '/third_party'));
 app.use('/data', express.static(__dirname + '/data'));
 
 app.get('/', function (req, res) {
-   res.sendFile(path.join(__dirname, 'flower.html'));
+   res.send(tempFn({sms_text: callr_text}));
 });
 
 app.get('/health_check', function (req, res) {
@@ -48,7 +57,11 @@ app.post('/send_sms', function (req, res) {
 });
 
 app.post('/sms_webhook', function (req, res) {
-   console.log('sms recieved', req.body.data);
-   res.sendFile(path.join(__dirname, 'flower.html'));
+   console.log('sms recieved', req.body);
+   if (!_.isUndefined(req.body.data)) {
+   	    console.log('Setting new sms data to :', req.body.data.text)
+   		callr_text = req.body.data.text;
+   }
+   res.send();
 });
 
