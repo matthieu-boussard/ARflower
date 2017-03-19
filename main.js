@@ -62,10 +62,10 @@ app.post('/send_sms', function (req, res) {
 
 app.post('/sms_webhook', function (req, res) {
    console.log('sms recieved', req.body);
-   if (!_.isUndefined(req.body.data)) {
+   if (!_.isUndefined(req.body.data) && (req.body.type =='sms.mo')) {
    	    console.log('Setting new sms data to :', req.body.data.text)
    		callr_text = req.body.data.text;
    }
-   res.send();
+   res.send('new text set');
 });
 
