@@ -51,7 +51,7 @@ app.get('/flower', function (req, res) {
 });
 
 app.get('/health_check', function (req, res) {
-   res.send('alive');
+	res.status('200').send('up');
 });
 
 app.post('/send_sms', function (req, res) {
