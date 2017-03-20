@@ -7,6 +7,7 @@ var doT = require('dot');
 var fs = require('fs');
 var _ = require('lodash');
 
+doT.templateSettings.strip = false;
 dotenv.load({ silent: true });
 var app = express();
 app.use(bodyParser.json())
