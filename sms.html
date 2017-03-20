@@ -1,24 +1,25 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <!-- three.js library -->
-<script src='../../three.js-master/build/three.js'></script>
-<script src="../../three.js-master/examples/js/libs/stats.min.js"></script>
-<script src="../../three.js-master/examples/js/loaders/OBJLoader.js"></script>
-<script src="../../three.js-master/examples/js/loaders/TTFLoader.js"></script>
-<script src="../../three.js-master/examples/js/libs/opentype.min.js"></script>
-<script src="../../three.js-master/examples/js/utils/GeometryUtils.js"></script>
+<script src='./third_party/three.js/build/three.js'></script>
+<script src="./third_party/three.js/examples/js/libs/stats.min.js"></script>
+<script src="./third_party/three.js/examples/js/loaders/OBJLoader.js"></script>
+<script src="./third_party/three.js/examples/js/loaders/TTFLoader.js"></script>
+<script src="./third_party/three.js/examples/js/libs/opentype.min.js"></script>
+<script src="./third_party/three.js/examples/js/utils/GeometryUtils.js"></script>
 
 
 <!-- jsartookit -->
-<script src="../vendor/jsartoolkit5/build/artoolkit.min.js"></script>
-<script src="../vendor/jsartoolkit5/js/artoolkit.api.js"></script>
+<script src="./third_party/jsartoolkit5/build/artoolkit.min.js"></script>
+<script src="./third_party/jsartoolkit5/js/artoolkit.api.js"></script>
 <!-- include threex.artoolkit -->
-<script src="../threex-artoolkitsource.js"></script>
-<script src="../threex-artoolkitcontext.js"></script>
-<script src="../threex-armarkercontrols.js"></script>
+<script src="./third_party/threex-artoolkitsource.js"></script>
+<script src="./third_party/threex-artoolkitcontext.js"></script>
+<script src="./third_party/threex-armarkercontrols.js"></script>
 
 <body style='margin : 0px; overflow: hidden;'>
 <script>
+
 	//////////////////////////////////////////////////////////////////////////////////
 	//		Init
 	//////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +141,7 @@
 	loader.load( './data/kenpixel.ttf', function ( json ) {
 		var font = new THREE.Font(json);
 
-		var textGeo = new THREE.TextGeometry( {{=it.sms_text}}, {
+		var textGeo = new THREE.TextGeometry( '{{=it.sms_text}}', {
 					font:font,
 					size: 0.3,
 					height: 0.05
