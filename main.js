@@ -9,6 +9,7 @@ var _ = require('lodash');
 
 doT.templateSettings.strip = false;
 dotenv.load({ silent: true });
+
 var app = express();
 app.use(bodyParser.json())
 
@@ -58,13 +59,13 @@ app.get('/health_check', function (req, res) {
 app.post('/send_sms', function (req, res) {
 	api.call('sms.send', '', '+33768399556', 'Welcome to AR flower', optionSMS).success(function(response) {
 		res.send('sent')
-	});
+	});  
 });
 
 app.post('/sms_webhook', function (req, res) {
    console.log('sms recieved', req.body);
    if (!_.isUndefined(req.body.data) && (req.body.type =='sms.mo')) {
-   	    console.log('Setting new sms data to :', req.body.data.text)
+   	  console.log('Setting new sms data to :', req.body.data.text);
    		callr_text = req.body.data.text;
    }
    res.send('new text set');

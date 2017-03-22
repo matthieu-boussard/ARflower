@@ -151,7 +151,10 @@
 		var centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
 		
 		// textGeo.computeVertexNormals();
+
 		var textMesh1 = new THREE.Mesh( textGeo, material );
+		textMesh1.rotation.x = 1.57;
+
 		textMesh1.position.x = centerOffset;
 
 		markerRoot.add( textMesh1 );
